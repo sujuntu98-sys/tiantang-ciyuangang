@@ -293,7 +293,8 @@ export default function CreatePostPage() {
                    pink:    { active: "border-pink-400 bg-pink-50 text-pink-500 shadow-pink-100",    border: "hover:border-pink-200",    bg: "bg-white", text: "text-gray-400", shadow: "" },
                   blue:    { active: "border-blue-400 bg-blue-50 text-blue-500 shadow-blue-100",    border: "hover:border-blue-200",    bg: "bg-white", text: "text-gray-400", shadow: "" },
                   purple:  { active: "border-purple-400 bg-purple-50 text-purple-500 shadow-purple-100", border: "hover:border-purple-200", bg: "bg-white", text: "text-gray-400", shadow: "" },
-                  green:   { active: "border-green-400 bg-green-50 text-green-500 shadow-green-100",  border: "hover:border-green-200",  bg: "bg-white", text: "text-gray-400", shadow: "" },
+                    green:   { active: "border-green-400 bg-green-50 text-green-500 shadow-green-100",  border: "hover:border-green-200",  bg: "bg-white", text: "text-gray-400", shadow: "" },
+                };
                 const c = colors[item.color];
                 return (
                   <button
