@@ -1,8 +1,18 @@
 /**
  * 存储适配器
- * 本地开发 → 文件系统（public/uploads/）
- * 生产环境 → Vercel Blob
+ * 优先使用 Cloudinary 云存储，否则使用本地文件系统
  */
+
+import { v2 as cloudinary } from "cloudinary";
+
+// 配置 Cloudinary（使用环境变量）
+if (process.env.CLOUDINARY_CLOUD_NAME) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+}
 
 export type UploadResult = {
   url: string;
@@ -12,14 +22,19 @@ export async function uploadFile(
   file: File,
   folder: string = "uploads"
 ): Promise<UploadResult> {
-  // 生产环境：使用 Vercel Blob
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const { put } = await import("@vercel/blob");
-    const ext = file.name.split(".").pop() || "jpg";
-    const blob = await put(`${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`, file, {
-      access: "public",
+  // 使用 Cloudinary（如果已配置）
+  if (process.env.CLOUDINARY_CLOUD_NAME) {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString("base64");
+    const dataUri = `data:${file.type};base64,${base64}`;
+
+    const result = await cloudinary.uploader.upload(dataUri, {
+      folder,
+      resource_type: "image",
     });
-    return { url: blob.url };
+
+    return { url: result.secure_url };
   }
 
   // 本地开发：使用文件系统
