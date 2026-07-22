@@ -7,7 +7,7 @@ interface PostCardProps {
     title: string;
     imageUrl: string;
     type: string;
-    createdAt: string;
+    createdAt: Date | string;
     user: { id: number; username: string; avatar: string | null };
     tags: { tag: { id: number; name: string } }[];
     _count: { likes: number; favorites: number; comments: number };
