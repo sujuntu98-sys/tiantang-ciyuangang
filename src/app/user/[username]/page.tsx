@@ -14,13 +14,15 @@ export default async function UserProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
+  // 手动解码 URL 编码的用户名（兼容 Vercel 生产环境）
+  const decoded = decodeURIComponent(username);
 
   let user;
   let errorMsg = "";
 
   try {
     user = await prisma.user.findUnique({
-      where: { username },
+      where: { username: decoded },
       include: {
         _count: { select: { posts: true, followers: true, following: true } },
         posts: {
@@ -42,7 +44,8 @@ export default async function UserProfilePage({
     return (
       <div className="max-w-6xl mx-auto px-4 py-20 text-center">
         <p className="text-red-500 font-bold text-lg mb-2">查询错误</p>
-        <p className="text-gray-500">username: {username}</p>
+        <p className="text-gray-500">username 原始: {username}</p>
+        <p className="text-gray-500">username 解码: {decoded}</p>
         <p className="text-gray-400 text-sm mt-2">{errorMsg}</p>
       </div>
     );
@@ -52,8 +55,8 @@ export default async function UserProfilePage({
     return (
       <div className="max-w-6xl mx-auto px-4 py-20 text-center">
         <p className="text-gray-500 text-lg mb-2">用户不存在</p>
-        <p className="text-gray-400">username 参数: &quot;{username}&quot;</p>
-        <p className="text-gray-400">已编码: {encodeURIComponent(username)}</p>
+        <p className="text-gray-400">原始参数: &quot;{username}&quot;</p>
+        <p className="text-gray-400">解码后: &quot;{decoded}&quot;</p>
       </div>
     );
   }
