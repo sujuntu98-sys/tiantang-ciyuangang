@@ -74,16 +74,16 @@ export default function SettingsPage() {
         image: data.user.avatar,
       });
 
-      setSuccess("资料已更新");
-      setAvatarFile(null);
-      setAvatarPreview(null);
+      setSuccess("资料已更新，即将跳转...");
 
-      // 刷新页面确保所有组件拿到最新 session
-      router.refresh();
+      // 强制跳转到新用户名的主页（确保 session 完全刷新）
+      setTimeout(() => {
+        window.location.href = `/user/${data.user.username}`;
+      }, 800);
     } catch {
       setError("网络错误");
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   return (
