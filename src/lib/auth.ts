@@ -49,6 +49,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.name = user.name;
         token.picture = user.image;
       }
+      // 确保 id 始终可用（老 token 没有 id 时用 sub）
+      if (!token.id) token.id = token.sub;
       // 当 session 更新时同步 token
       if (trigger === "update" && session) {
         if (session.name) token.name = session.name;
@@ -58,7 +60,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
+        // token.sub 是 Auth.js 默认设置的，永远存在
+        session.user.id = (token.id || token.sub) as string;
         session.user.name = token.name as string;
         session.user.image = token.picture as string | null;
       }
