@@ -78,7 +78,7 @@ export default function SettingsPage() {
 
       // 强制跳转到新用户名的主页（确保 session 完全刷新）
       setTimeout(() => {
-        window.location.href = `/user/${data.user.username}`;
+        window.location.href = `/user/${encodeURIComponent(data.user.username)}`;
       }, 800);
     } catch {
       setError("网络错误");
@@ -203,7 +203,7 @@ export default function SettingsPage() {
         {/* 返回链接 */}
         <div className="text-center">
           <Link
-            href={`/user/${session.user.name}`}
+            href={`/user/${encodeURIComponent(session.user.name || "")}`}
             className="text-sm text-gray-400 hover:text-purple-500 transition-colors"
           >
             ← 返回我的主页

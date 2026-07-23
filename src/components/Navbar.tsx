@@ -92,7 +92,7 @@ export function Navbar() {
                       <p className="text-xs text-gray-400">{user.email}</p>
                     </div>
                     <Link
-                      href={`/user/${user.name}`}
+                      href={`/user/${encodeURIComponent(user.name || "")}`}
                       onClick={() => setMenuOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 transition-colors"
                     >

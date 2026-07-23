@@ -6,6 +6,8 @@ import { Calendar, Image as ImageIcon, Users, UserPlus } from "lucide-react";
 import { PostCard } from "@/components/PostCard";
 import { FollowButton } from "@/components/FollowButton";
 
+export const dynamic = "force-dynamic";
+
 export default async function UserProfilePage({
   params,
 }: {

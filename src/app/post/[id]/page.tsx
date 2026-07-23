@@ -106,7 +106,7 @@ export default async function PostDetailPage({
             {/* 作者 */}
             <div className="flex items-center gap-3">
               <Link
-                href={`/user/${post.user.username}`}
+                href={`/user/${encodeURIComponent(post.user.username)}`}
                 className="flex items-center gap-2.5 group"
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
