@@ -71,8 +71,12 @@ export function Navbar() {
                   onClick={() => setMenuOpen(!menuOpen)}
                   className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-purple-50 transition-all duration-200"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-sm">
-                    {user.name?.charAt(0).toUpperCase() || "U"}
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-sm overflow-hidden">
+                    {user.image ? (
+                      <img src={user.image} alt={user.name || ""} className="w-full h-full object-cover" />
+                    ) : (
+                      user.name?.charAt(0).toUpperCase() || "U"
+                    )}
                   </div>
                   <span className="hidden sm:inline text-sm text-gray-700 font-medium">
                     {user.name}
