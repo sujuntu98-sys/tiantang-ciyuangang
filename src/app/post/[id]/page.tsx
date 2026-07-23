@@ -109,8 +109,12 @@ export default async function PostDetailPage({
                 href={`/user/${encodeURIComponent(post.user.username)}`}
                 className="flex items-center gap-2.5 group"
               >
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                  {post.user.username.charAt(0).toUpperCase()}
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium overflow-hidden">
+                  {post.user.avatar ? (
+                    <img src={post.user.avatar} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    post.user.username.charAt(0).toUpperCase()
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-700 group-hover:text-purple-500 transition-colors">
