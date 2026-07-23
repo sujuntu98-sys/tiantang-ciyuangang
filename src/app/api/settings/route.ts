@@ -52,6 +52,15 @@ export async function PUT(request: Request) {
       data.avatar = result.url;
     }
 
+    // 没有任何要修改的内容
+    if (Object.keys(data).length === 0) {
+      const current = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, username: true, avatar: true, bio: true },
+      });
+      return NextResponse.json({ user: current });
+    }
+
     const updated = await prisma.user.update({
       where: { id: userId },
       data,
@@ -64,8 +73,12 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json({ user: updated });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Settings error:", error);
-    return NextResponse.json({ error: "更新失败" }, { status: 500 });
+    const msg = error?.message || error?.code || "更新失败";
+    return NextResponse.json(
+      { error: `更新失败：${msg}` },
+      { status: 500 }
+    );
   }
 }
