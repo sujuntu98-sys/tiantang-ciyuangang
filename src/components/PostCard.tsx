@@ -69,8 +69,12 @@ export function PostCard({ post }: PostCardProps) {
           {/* 底部：作者 + 互动数据 */}
           <div className="flex items-center justify-between text-xs text-gray-400">
             <div className="flex items-center gap-1.5">
-              <div className="w-5 h-5 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-[10px] font-medium">
-                {post.user.username.charAt(0).toUpperCase()}
+              <div className="w-5 h-5 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-[10px] font-medium overflow-hidden">
+                {post.user.avatar ? (
+                  <img src={post.user.avatar} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  post.user.username.charAt(0).toUpperCase()
+                )}
               </div>
               <span>{post.user.username}</span>
             </div>

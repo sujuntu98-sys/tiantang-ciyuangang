@@ -129,9 +129,13 @@ export function CommentSection({ postId }: CommentSectionProps) {
               <div className="flex items-center gap-2.5 mb-2">
                 <Link
                   href={`/user/${encodeURIComponent(comment.user.username)}`}
-                  className="w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-[10px] font-medium"
+                  className="w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-[10px] font-medium overflow-hidden"
                 >
-                  {comment.user.username.charAt(0).toUpperCase()}
+                  {comment.user.avatar ? (
+                    <img src={comment.user.avatar} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    comment.user.username.charAt(0).toUpperCase()
+                  )}
                 </Link>
                 <Link
                   href={`/user/${encodeURIComponent(comment.user.username)}`}
