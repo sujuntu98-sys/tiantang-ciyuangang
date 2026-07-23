@@ -13,15 +13,33 @@ export async function PUT(request: Request) {
     const userId = parseInt(session.user.id);
     const formData = await request.formData();
 
+    const username = formData.get("username") as string | null;
     const bio = formData.get("bio") as string | null;
     const avatarFile = formData.get("avatar") as File | null;
 
     const data: Record<string, string> = {};
 
+    // 更新用户名
+    if (username && username.trim().length >= 2 && username.trim().length <= 20) {
+      // 检查是否与当前用户名相同
+      if (username.trim() !== session.user.name) {
+        // 检查是否已被占用
+        const existing = await prisma.user.findUnique({
+          where: { username: username.trim() },
+        });
+        if (existing && existing.id !== userId) {
+          return NextResponse.json({ error: "该用户名已被使用" }, { status: 409 });
+        }
+        data.username = username.trim();
+      }
+    }
+
+    // 更新简介
     if (bio !== null && bio.length <= 200) {
       data.bio = bio;
     }
 
+    // 更新头像
     if (avatarFile && avatarFile.size > 0) {
       if (!["image/jpeg", "image/png", "image/webp"].includes(avatarFile.type)) {
         return NextResponse.json({ error: "头像仅支持 JPG、PNG、WebP" }, { status: 400 });

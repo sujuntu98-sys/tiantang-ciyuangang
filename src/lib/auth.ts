@@ -42,9 +42,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/auth/login",
   },
   callbacks: {
+    async jwt({ token, user, trigger, session }) {
+      // 首次登录时把用户数据写入 token
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.picture = user.image;
+      }
+      // 当 session 更新时同步 token
+      if (trigger === "update" && session) {
+        if (session.name) token.name = session.name;
+        if (session.image) token.picture = session.image;
+      }
+      return token;
+    },
     async session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.name = token.name as string;
+        session.user.image = token.picture as string | null;
       }
       return session;
     },

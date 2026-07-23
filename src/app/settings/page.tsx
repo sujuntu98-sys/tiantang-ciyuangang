@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Camera, Save, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Camera, Save, AlertCircle, CheckCircle2, User } from "lucide-react";
 import Link from "next/link";
 
 export default function SettingsPage() {
@@ -11,25 +11,13 @@ export default function SettingsPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [username, setUsername] = useState(session?.user?.name || "");
   const [bio, setBio] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // 加载当前资料
-  useEffect(() => {
-    if (session?.user) {
-      // 从 session 获取当前用户信息
-      fetch(`/api/users/${session.user.name}`)
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.bio) setBio(data.bio);
-        })
-        .catch(() => {});
-    }
-  }, [session]);
 
   if (!session?.user) return null;
 
@@ -60,6 +48,7 @@ export default function SettingsPage() {
 
     try {
       const formData = new FormData();
+      formData.append("username", username.trim());
       formData.append("bio", bio);
       if (avatarFile) {
         formData.append("avatar", avatarFile);
@@ -77,10 +66,20 @@ export default function SettingsPage() {
         return;
       }
 
-      await update();
+      const data = await res.json();
+
+      // 更新 session — 必须有 name 和 image 字段
+      await update({
+        name: data.user.username,
+        image: data.user.avatar,
+      });
+
       setSuccess("资料已更新");
       setAvatarFile(null);
       setAvatarPreview(null);
+
+      // 刷新页面确保所有组件拿到最新 session
+      router.refresh();
     } catch {
       setError("网络错误");
     }
@@ -99,7 +98,6 @@ export default function SettingsPage() {
       </div>
 
       <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-purple-100 border border-purple-50 p-8 space-y-8">
-        {/* 消息提示 */}
         {error && (
           <div className="p-3.5 bg-red-50 border border-red-100 rounded-xl text-red-500 text-sm flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" /> {error}
@@ -122,15 +120,12 @@ export default function SettingsPage() {
               onClick={() => fileInputRef.current?.click()}
             >
               {avatarPreview ? (
-                <img
-                  src={avatarPreview}
-                  alt="头像预览"
-                  className="w-full h-full object-cover"
-                />
+                <img src={avatarPreview} alt="头像预览" className="w-full h-full object-cover" />
+              ) : session.user.image ? (
+                <img src={session.user.image} alt="头像" className="w-full h-full object-cover" />
               ) : (
-                session.user.name?.charAt(0).toUpperCase() || "U"
+                username.charAt(0).toUpperCase() || "U"
               )}
-              {/* hover 遮罩 */}
               <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <Camera className="w-5 h-5 text-white" />
               </div>
@@ -155,6 +150,26 @@ export default function SettingsPage() {
               className="hidden"
             />
           </div>
+        </div>
+
+        {/* 用户名 */}
+        <div>
+          <label className="flex items-center gap-1.5 text-sm font-medium text-gray-600 mb-2">
+            <User className="w-3.5 h-3.5 text-blue-400" />
+            用户名
+          </label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="input-enhanced w-full px-4 py-2.5 text-gray-800"
+            placeholder="给自己起个名字"
+            maxLength={20}
+            minLength={2}
+          />
+          <p className="text-xs text-gray-400 mt-1">
+            2-20 个字符，只能包含中英文、数字和下划线
+          </p>
         </div>
 
         {/* 简介 */}
